@@ -16,14 +16,13 @@ export const Login = () => {
         try {
             console.log(userId);
             console.log(pwd);
-            // const res = await fetch(url + `/auth/public-key?userId=${userId}`); // Changed route to /auth/public-key
-            const res = await fetch(url + '/auth/public-key', { // Changed route to /auth/public-key
+            const res = await fetch(url + `/auth/public-key?userId=${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ userId: userId })
-            });
+            }); // Changed route to /auth/public-key
             const publicKeyData = await res.json();
             if(res.status===404){
                 setErrMsg("用户不存在")
@@ -45,7 +44,8 @@ export const Login = () => {
                 body: JSON.stringify({
                     userId: userId,
                     encryptedPwd: encryptedPwdBase64
-                })
+                }),
+                credentials: 'include' // IMPORTANT !! This is needed to save the session cookie !!!
             });
             console.log(loginResponse.status)
             if(loginResponse.status===200){

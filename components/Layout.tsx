@@ -1,25 +1,29 @@
-import {Affix, Container, Dropdown, Nav, Sidenav} from "rsuite";
+import {Affix, Container, Dropdown, Nav, Panel, Sidenav} from "rsuite";
 import 'rsuite/sidenav/styles/index.css'
 import 'rsuite/nav/styles/index.css'
 import 'rsuite/dropdown/styles/index.css'
+import 'rsuite/Panel/styles/index.css'
 import DashboardIcon from '@rsuite/icons/legacy/Dashboard';
 import CalendarIcon from '@rsuite/icons/legacy/Calendar';
 import {useState} from "react";
 import {Paypal, Server} from "@rsuite/icons/cjs/react/legacy";
 import MenuIcon from '@rsuite/icons/Menu';
+import { Text } from 'rsuite';
+import { motion } from "framer-motion";
 export function DefaultLayout() {
-    const [expand, setExpand] = useState(true);
+    const [expand, setExpand] = useState(false);
     const [page, setPage] = useState(1);
     const onclick1=()=>{setPage(1)}
     const onclick2=()=>{setPage(2)}
     const onclick3=()=>{setPage(3)}
     const onclick4=()=>{setPage(4)}
     const onclick5=()=>{setPage(5)}
+    // @ts-ignore
     return (
         <Container>
             <Sidenav className="max-w-[300px] min-h-[100vh] fixed" expanded={expand}>
                 <Sidenav.Body>
-                    <Nav>
+                    <Nav className={"text-center"}>
                         <Nav.Item icon={<DashboardIcon/>} onClick={onclick1}>首页</Nav.Item>
                         <Nav.Item icon={<CalendarIcon/>} onClick={onclick2}>预约</Nav.Item>
                         <Nav.Item icon={<Paypal/>} onClick={onclick3}>充值</Nav.Item>
@@ -29,6 +33,23 @@ export function DefaultLayout() {
                 </Sidenav.Body>
                 <Sidenav.Toggle onToggle={setExpand} />
             </Sidenav>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop:"30px"}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                            className="w-[20vh] h-[20vh] rounded-xl"
+                            alt="头像"
+                    ></img>
+                    <Panel header={<Text weight={"extrabold"}>个人信息</Text>} shaded className={"bg-white w-[20vw] h-[20vh] ml-5"}>
+                        <Text>昵称：{"忆梦"}</Text>
+                        <Text>状态：{"在店10小时26分钟"}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：{"￥80"}    余额：{"￥100"}</Text>
+                        <Text></Text>
+                    </Panel>
+                </Container>
+            </motion.div>
         </Container>
-    )
+)
 }
