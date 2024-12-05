@@ -1,4 +1,4 @@
-import {Affix, Container, Dropdown, Nav, Panel, Sidenav} from "rsuite";
+import {Container, Nav, Panel, Sidenav} from "rsuite";
 import 'rsuite/sidenav/styles/index.css'
 import 'rsuite/nav/styles/index.css'
 import 'rsuite/dropdown/styles/index.css'
@@ -15,6 +15,10 @@ export function DefaultLayout() {
     const [nickname, setNickname] = useState("忆梦");
     const [expand, setExpand] = useState(false);
     const [page, setPage] = useState(1);
+    const [auth, setAuth] = useState("STAFF");
+    const [playTime,setPlayTime] = useState("");
+    const [balance,setBalance] = useState(0);
+    const [consumption,setConsumption] = useState(0);
     const onclick1=()=>{setPage(1)}
     const onclick2=()=>{setPage(2)}
     const onclick3=()=>{setPage(3)}
@@ -38,6 +42,10 @@ export function DefaultLayout() {
             })
             .then(data => {
                 setNickname(data.userName);
+                setAuth(data.auth);
+                setBalance(data.money)
+                setConsumption(data.consumption)
+                setPlayTime(data.playTime)
             })
             .catch(error => {
                 console.error('Error fetching user info:', error);
@@ -56,25 +64,26 @@ export function DefaultLayout() {
                         <Nav.Item icon={<Server/>} onClick={onclick5}>管理面板</Nav.Item>
                     </Nav>
                 </Sidenav.Body>
-                <Sidenav.Toggle onToggle={setExpand} />
+                <Sidenav.Toggle onToggle={setExpand}/>
             </Sidenav>
             <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop:"30px"}}
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 1 ? 1 : 0}}
                 transition={{duration: 0.1}}
             >
-                <Container className={"flex"}>
+                <Container className={"flex fixed"}>
                     <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                            className="w-[20vh] h-[20vh] rounded-xl"
-                            alt="头像"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
                     ></img>
-                    <Panel header={<Text weight={"extrabold"}>个人信息</Text>} shaded className={"bg-white w-[20vw] h-[20vh] ml-5"}>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
                         <Text>昵称：{nickname}</Text>
-                        <Text>状态：{"在店10小时26分钟"}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：{"￥80"}    余额：{"￥100"}</Text>
-                        <Text></Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
                     </Panel>
                 </Container>
             </motion.div>
         </Container>
-)
+    )
 }
