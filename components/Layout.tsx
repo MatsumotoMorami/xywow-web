@@ -79,7 +79,8 @@ export function DefaultLayout() {
                            className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
                         <Text>昵称：{nickname}</Text>
                         <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption}</Text>
+                        <Text>余额：￥{balance}</Text>
                         <Text>权限组：{auth}</Text>
                     </Panel>
                 </Container>

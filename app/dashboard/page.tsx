@@ -5,6 +5,7 @@ import { store } from "@/components/redux/store";
 import React, { useRef } from "react";
 import { Provider } from "react-redux";
 import { Divider } from "rsuite";
+import '@styles/globals.css';
 
 export default function HomePage() {
     const registerRef = useRef(null);
