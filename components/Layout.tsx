@@ -22,7 +22,7 @@ export function DefaultLayout() {
     const onclick5=()=>{setPage(5)}
 
 
-    const SERVER_URL = "https://frp-fly.top:12060";
+    const SERVER_URL = "https://api.xywow.studio:12060";
 
     useEffect(() => {
         // 获取用户信息

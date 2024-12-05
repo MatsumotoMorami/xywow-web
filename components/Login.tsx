@@ -4,7 +4,7 @@ import forge from 'node-forge';
 import 'rsuite/input/styles/index.css'
 import {useRouter} from "next/navigation";
 
-const url="https://frp-fly.top:12060"
+const url="https://api.xywow.studio:12060";
 
 export const Login = () => {
     const [userId, setUserId] = useState('');
