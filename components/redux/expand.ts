@@ -1,8 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 
 const expandSlice = createSlice({
     name: 'expand',
-    initialState: {value:false},
+    initialState: {value: false},
     reducers: {
         rev: (state) => {
             state.value = !state.value;
@@ -10,5 +10,5 @@ const expandSlice = createSlice({
     }
 })
 
-export const { rev } = expandSlice.actions;
+export const {rev} = expandSlice.actions;
 export const expandReducer = expandSlice.reducer;

@@ -76,10 +76,10 @@
     --c: lightseagreen;
     /* 调用自定义属性--c，设置文字阴影（发光效果） */
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
     /* 执行动画：动画名 时长 线性的 无限次播放 */
     animation: animate 5s linear infinite;
 }
@@ -97,10 +97,10 @@
     --c: lightseagreen;
     /* 调用自定义属性--c，设置文字阴影（发光效果） */
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
     /* 执行动画：动画名 时长 线性的 无限次播放 */
     animation: animate 5s linear infinite;
 }
@@ -117,10 +117,10 @@
     --c: lightseagreen;
     /* 调用自定义属性--c，设置文字阴影（发光效果） */
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
     /* 执行动画：动画名 时长 线性的 无限次播放 */
     animation: animate 5s linear infinite;
 }
@@ -138,10 +138,10 @@
     --c: lightseagreen;
     /* 调用自定义属性--c，设置文字阴影（发光效果） */
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
     /* 执行动画：动画名 时长 线性的 无限次播放 */
 }
 
@@ -154,10 +154,10 @@
     outline: none;
     --c: lightseagreen;
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
 }
 
 .introtextforblog {
@@ -174,10 +174,10 @@
     outline: none;
     --c: lightseagreen;
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
 }
 
 /* 定义动画 */
@@ -194,7 +194,7 @@
     /* 隐藏溢出的内容 */
 }
 
-.headerE>* {
+.headerE > * {
     /* 选择 header 的直接子元素 */
     position: relative;
     /* 保证子元素定位的参考点 */
@@ -204,7 +204,7 @@
     /* 添加过渡效果 */
 }
 
-.headerE:hover>* {
+.headerE:hover > * {
     top: 0;
     /* 鼠标悬停时恢复原位 */
 }
@@ -267,7 +267,7 @@
     grid-template-rows: 1fr;
 }
 
-.logborder>*:not(:last-child) {
+.logborder > *:not(:last-child) {
     border-bottom: solid rgba(0, 64, 93, 0.3) 2px;
 }
 
@@ -306,10 +306,10 @@
     outline: none;
     --c: lightseagreen;
     text-shadow: 0 0 10px var(--c),
-        0 0 20px var(--c),
-        0 0 40px var(--c),
-        0 0 80px var(--c),
-        0 0 160px var(--c);
+    0 0 20px var(--c),
+    0 0 40px var(--c),
+    0 0 80px var(--c),
+    0 0 160px var(--c);
 }
 
 .contactme {

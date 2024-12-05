@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Button, ButtonGroup, ButtonToolbar, Container, Divider, Modal, Sidebar, Text } from "rsuite";
-import { AppDispatch, RootState } from "./redux/store";
-import React, { createContext, useContext, useRef } from "react";
-import { Login } from "./Login";
+import {useDispatch, useSelector} from "react-redux";
+import {Button, ButtonGroup, ButtonToolbar, Container, Divider, Modal, Sidebar, Text} from "rsuite";
+import {AppDispatch, RootState} from "./redux/store";
+import React, {createContext, useContext, useRef} from "react";
+import {Login} from "./Login";
 import 'rsuite/Modal/styles/index.css'
 
 const MyContext = createContext(null);
@@ -11,25 +11,30 @@ export default function HomePageSet({registerRef}) {
     const expand = useSelector((state: RootState) => state.expand.value);
     const dispatch = useDispatch<AppDispatch>();
     const registerClickHandle = () => {
-        registerRef.current.scrollIntoView({ behavior: 'smooth' });
+        registerRef.current.scrollIntoView({behavior: 'smooth'});
     }
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     return (
         <Container className="w-[80vw] h-[100vh] ml-[10vw] flex flex-col items-center justify-center">
-            <Container className="font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent]">
+            <Container
+                className="font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent]">
                 <Text className="text-6xl text-center mb-[3vh]">XYwowNET</Text>
                 <Text className="text-center">Powered by KohakuwuTech</Text>
             </Container>
-            <Container className="mt-[5vh] w-80 font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent] flex justify-evenly">
+            <Container
+                className="mt-[5vh] w-80 font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent] flex justify-evenly">
                 <Button className="h-[5vh] flex items-center justify-center group flex-col" onClick={handleOpen}>
                     <span>登录</span>
-                    <span className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                    <span
+                        className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                 </Button>
-                <Button className="h-[5vh] flex items-center justify-center group flex-col" onClick={registerClickHandle}>
+                <Button className="h-[5vh] flex items-center justify-center group flex-col"
+                        onClick={registerClickHandle}>
                     <span>注册</span>
-                    <span className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                    <span
+                        className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                 </Button>
             </Container>
             <Modal open={open} onClose={handleClose}>
@@ -102,12 +107,16 @@ export function AboutPageSet({registerRef}) {
                     {/* https://q2.qlogo.cn/headimg_dl?dst_uin=3098805300&spec=640 QQ头像*/}
                     {staffList.map(item => {
                         let ret = (
-                            <Container className="m-[2vw] px-6 py-2 w-[218px] rounded-3xl bg-white hover:shadow-2xl shadow-md duration-300 flex flex-col" key={item.userId}>
-                                <img width="170" height="170" src={"https://q2.qlogo.cn/headimg_dl?dst_uin=" + item.userId.toString() + "&spec=640"}
-                                    className="rounded-3xl mt-3"></img>
+                            <Container
+                                className="m-[2vw] px-6 py-2 w-[218px] rounded-3xl bg-white hover:shadow-2xl shadow-md duration-300 flex flex-col"
+                                key={item.userId}>
+                                <img width="170" height="170"
+                                     src={"https://q2.qlogo.cn/headimg_dl?dst_uin=" + item.userId.toString() + "&spec=640"}
+                                     className="rounded-3xl mt-3"></img>
                                 <Container className="flex flex-row leading-tight">
-                                    <Container className="w-2 h-[60%] mt-[10%] mr-3 rounded-full bg-color" />
-                                    <Container className="flex flex-col overflow-x-auto text-nowrap overflow-hidden scrollbar-hide">
+                                    <Container className="w-2 h-[60%] mt-[10%] mr-3 rounded-full bg-color"/>
+                                    <Container
+                                        className="flex flex-col overflow-x-auto text-nowrap overflow-hidden scrollbar-hide">
                                         <Text className="text-left mt-3 font-black">{item.name}</Text>
                                         <Text className="text-left my-2 font-black">{item.job}</Text>
                                     </Container>

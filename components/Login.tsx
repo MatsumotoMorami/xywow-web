@@ -1,17 +1,18 @@
 import {Form, Button, FlexboxGrid, Input, Text, Container} from 'rsuite';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import forge from 'node-forge';
 import 'rsuite/input/styles/index.css'
 import {useRouter} from "next/navigation";
 
-const url="https://api.xywow.studio:12060";
+const url = "https://api.xywow.studio:12060";
 
 export const Login = () => {
     const [userId, setUserId] = useState('');
     const [pwd, setPwd] = useState('');
-    const [errMsg,setErrMsg] = useState('');
-    const [errMsgIsShow,setErrMsgIsShow] = useState(false);
-    const router=useRouter();
+    const [errMsg, setErrMsg] = useState('');
+    const [errMsgIsShow, setErrMsgIsShow] = useState(false);
+    const router = useRouter();
+
     async function handleSubmit() {
         try {
             console.log(userId);
@@ -21,22 +22,22 @@ export const Login = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userId })
+                body: JSON.stringify({userId: userId})
             }); // Changed route to /auth/public-key
             const publicKeyData = await res.json();
-            if(res.status===404){
+            if (res.status === 404) {
                 setErrMsg("用户不存在")
                 setErrMsgIsShow(true)
                 return;
             }
-            let publicKeyPem,publicKey,encryptedPwd,encryptedPwdBase64;
-            if(publicKeyData.publicKey){
+            let publicKeyPem, publicKey, encryptedPwd, encryptedPwdBase64;
+            if (publicKeyData.publicKey) {
                 publicKeyPem = publicKeyData.publicKey;
                 publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
                 encryptedPwd = publicKey.encrypt(pwd, 'RSA-OAEP');
                 encryptedPwdBase64 = forge.util.encode64(encryptedPwd);
             }
-            const loginResponse = await fetch(url+'/auth/login', { // Changed route to /auth/login
+            const loginResponse = await fetch(url + '/auth/login', { // Changed route to /auth/login
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -48,21 +49,21 @@ export const Login = () => {
                 credentials: 'include' // IMPORTANT !! This is needed to save the session cookie !!!
             });
             console.log(loginResponse.status)
-            if(loginResponse.status===200){
+            if (loginResponse.status === 200) {
                 setErrMsg("登录成功!")
                 setErrMsgIsShow(true)
                 await router.push('/dashboard')
-            }
-            else if(loginResponse.status===401){
+            } else if (loginResponse.status === 401) {
                 setErrMsg("密码错误!")
                 setErrMsgIsShow(true)
             }
-        }catch (error) {
+        } catch (error) {
             console.error('Error:', error);
             setErrMsg("登录失败!")
             setErrMsgIsShow(true)
         }
     }
+
     return (
         <FlexboxGrid className='font-black'>
             <FlexboxGrid.Item colspan={12}>

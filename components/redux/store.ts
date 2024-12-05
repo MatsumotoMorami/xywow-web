@@ -1,5 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { expandReducer } from "./expand";
+import {configureStore} from "@reduxjs/toolkit";
+import {expandReducer} from "./expand";
 
 export const store = configureStore({
     reducer: {
