@@ -84,6 +84,96 @@ export function DefaultLayout() {
                     </Panel>
                 </Container>
             </motion.div>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 2 ? 1 : 0}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex fixed"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
+                    ></img>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
+                        <Text>昵称：{nickname}</Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
+                    </Panel>
+                </Container>
+            </motion.div>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 3 ? 1 : 0}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex fixed"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
+                    ></img>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
+                        <Text>昵称：{nickname}</Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
+                    </Panel>
+                </Container>
+            </motion.div>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 4 ? 1 : 0}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex fixed"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
+                    ></img>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
+                        <Text>昵称：{nickname}</Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
+                    </Panel>
+                </Container>
+            </motion.div>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 5 ? 1 : 0}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex fixed"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
+                    ></img>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
+                        <Text>昵称：{nickname}</Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
+                    </Panel>
+                </Container>
+            </motion.div>
+            <motion.div
+                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 6 ? 1 : 0}}
+                transition={{duration: 0.1}}
+            >
+                <Container className={"flex fixed"}>
+                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
+                         className="w-[30vh] h-[30vh] rounded-xl"
+                         alt="头像"
+                    ></img>
+                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
+                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
+                        <Text>昵称：{nickname}</Text>
+                        <Text>游玩时间：{playTime}</Text>
+                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
+                        <Text>权限组：{auth}</Text>
+                    </Panel>
+                </Container>
+            </motion.div>
         </Container>
     )
 }
