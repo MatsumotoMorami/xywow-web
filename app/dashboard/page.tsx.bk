@@ -1,0 +1,20 @@
+﻿// .xywow-web/app/dashboard/page.tsx
+import React from "react";
+import Link from "next/link";
+
+export default function DashboardPage() {
+    return (
+        <div>
+            <h1 className="text-2xl font-bold">欢迎来到管理系统后台</h1>
+            <p>在这里您可以轻松浏览预约信息、查看个人资料，以及进行管理操作。</p>
+            <div className="mt-4 flex gap-4">
+                <Link href="/dashboard/appointment">
+                    <button className="primary-button">预约模块</button>
+                </Link>
+                <Link href="/dashboard/personal">
+                    <button className="primary-button">个人信息</button>
+                </Link>
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,313 @@
+// Layout.tsx
+import React, { useEffect, useState } from "react";
+import { Container, Nav, Panel, Sidenav, Divider, Text } from "rsuite";
+import 'rsuite/sidenav/styles/index.css';
+import 'rsuite/nav/styles/index.css';
+import 'rsuite/dropdown/styles/index.css';
+import 'rsuite/Panel/styles/index.css';
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import DashboardIcon from '@rsuite/icons/legacy/Dashboard';
+import CalendarIcon from '@rsuite/icons/legacy/Calendar';
+import ExitIcon from '@rsuite/icons/Exit';
+import PaypalIcon from '@rsuite/icons/legacy/Paypal';
+import ServerIcon from '@rsuite/icons/legacy/Server';
+import MenuIcon from '@rsuite/icons/Menu';
+import { UserCard } from "./UserCard";
+import { ContactCard } from "./ContactCard";
+
+const SERVER_URL = "https://api.xywow.studio:12060";
+
+interface UserInfoResponse {
+    inStore: boolean;
+    enterTime: string | null;
+    userId: string;
+    userName: string;
+    auth: number;
+    balance: number;
+    playcount: number;
+    discount: number;      // 系统额外折扣
+    consumption: number;   // 用户累计消费金额(确保后端返回为数值类型)
+}
+
+function getVipLevel(consumption: number): number {
+    const level = Math.floor(consumption / 50);
+    return level > 100 ? 100 : level;
+}
+
+function getVipDiscountFactor(vipLevel: number): number {
+    return 1.0 - (vipLevel * 0.005);
+}
+
+function calculateBaseCostByHours(hours: number): number {
+    // 0-3小时：8元/小时
+    // 3-6小时：6元/小时
+    // 6-10小时：5元/小时
+    // 超过10小时：5元/小时
+    let cost = 0;
+    for (let h = 1; h <= hours; h++) {
+        if (h <= 3) {
+            cost += 8;
+        } else if (h <= 6) {
+            cost += 6;
+        } else {
+            cost += 5;
+        }
+    }
+    return cost;
+}
+
+export function DefaultLayout() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [nickname, setNickname] = useState("忆梦");
+    const [expand, setExpand] = useState(false);
+    const [page, setPage] = useState(1);
+    const [auth, setAuth] = useState("STAFF");
+    const [playTime, setPlayTime] = useState("");
+    const [balance, setBalance] = useState(0);
+    const [estimatedCharge, setEstimatedCharge] = useState(0);
+    const [playcount, setPlaycount] = useState(0);
+    const [discount, setDiscount] = useState(1);
+    const [userid, setUserId] = useState("2803355799");
+    const [image, setImage] = useState("https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640");
+    const [inStore, setInStore] = useState(false);
+    const [enterTime, setEnterTime] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isPortrait, setIsPortrait] = useState(true);
+    const [consumption, setConsumption] = useState(0);
+
+    const router = useRouter();
+
+    const handleNavItemClick = (targetPage: number) => setPage(targetPage);
+
+    const handleLogout = () => {
+        if (window.confirm("确定要登出吗？")) {
+            fetch(`${SERVER_URL}/auth/logout`, { method: 'POST', credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to logout');
+                    window.location.href = "/";
+                })
+                .catch(error => console.error('Error logging out:', error));
+        }
+    };
+
+    const navItems = [
+        { page: 1, label: "首页", icon: <DashboardIcon />, ariaLabel: "首页", show: true },
+        { page: 2, label: "预约", icon: <CalendarIcon />, ariaLabel: "预约", show: true },
+        { page: 3, label: "充值", icon: <PaypalIcon />, ariaLabel: "充值", show: true },
+        { page: 4, label: "排行榜", icon: <MenuIcon />, ariaLabel: "排行榜", show: true },
+        { page: 5, label: "管理面板", icon: <ServerIcon />, ariaLabel: "管理面板", show: auth === "STAFF" }
+    ];
+
+    useEffect(() => {
+        fetch(`${SERVER_URL}/auth/user`, { method: 'GET', credentials: 'include' })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 500) window.location.href = "/";
+                    throw new Error('Failed to fetch user info');
+                }
+                setIsAuthenticated(true);
+                return response.json();
+            })
+            .then((data: UserInfoResponse) => {
+                setUserId(data.userId);
+                setImage(`https://q2.qlogo.cn/headimg_dl?dst_uin=${data.userId}&spec=640`);
+                setNickname(data.userName);
+                setAuth(data.auth === 0 ? "STAFF" : data.auth === 1 ? "普通玩家" : data.auth === 2 ? "您已被警告" : "您已被封禁");
+                setBalance(data.balance);
+                setPlaycount(data.playcount);
+                setDiscount(data.discount);
+                setInStore(data.inStore);
+                setEnterTime(data.enterTime);
+                setConsumption(data.consumption);
+            })
+            .catch(error => console.error('Error fetching user info:', error))
+            .finally(() => setIsLoading(false));
+    }, []);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        const computePlayData = () => {
+            if (!inStore || !enterTime) {
+                setPlayTime("");
+                setEstimatedCharge(0);
+                return;
+            }
+
+            const enterTimestamp = parseInt(enterTime, 10);
+            if (isNaN(enterTimestamp)) {
+                setPlayTime("");
+                setEstimatedCharge(0);
+                return;
+            }
+
+            const enterDate = new Date(enterTimestamp);
+            if (isNaN(enterDate.getTime())) {
+                setPlayTime("");
+                setEstimatedCharge(0);
+                return;
+            }
+
+            const now = new Date();
+            let diffMs = now.getTime() - enterDate.getTime();
+            if (diffMs < 0) diffMs = 0;
+
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const day = Math.floor(diffMinutes / (60 * 24));
+            const hour = Math.floor((diffMinutes % (60 * 24)) / 60);
+            const minute = diffMinutes % 60;
+
+            let playTimeStr = "";
+            if (day > 0) playTimeStr += `${day}天 `;
+            if (hour > 0) playTimeStr += `${hour}小时 `;
+            if (minute > 0) playTimeStr += `${minute}分钟`;
+            if (playTimeStr === "") playTimeStr = "不到1分钟";
+
+            setPlayTime(playTimeStr.trim());
+
+            const totalHours = Math.ceil(diffMs / 3600000);
+            const baseCost = calculateBaseCostByHours(totalHours);
+
+            const vipLevel = getVipLevel(consumption);
+            const vipDiscountFactor = getVipDiscountFactor(vipLevel);
+
+            const finalCost = baseCost * vipDiscountFactor * discount;
+
+            setEstimatedCharge(finalCost);
+        };
+
+        if (isAuthenticated && inStore && enterTime) {
+            computePlayData();
+            timer = setInterval(computePlayData, 60000);
+        } else {
+            setPlayTime("");
+            setEstimatedCharge(0);
+        }
+
+        return () => timer && clearInterval(timer);
+    }, [isAuthenticated, inStore, enterTime, discount, consumption]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+            setIsPortrait(window.innerHeight > window.innerWidth);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [expand, isMobile, isPortrait]);
+
+    if (isLoading) return <div className="flex justify-center items-center h-screen">加载中...</div>;
+    if (!isAuthenticated) {
+        window.location.href = "/";
+        return null;
+    }
+
+    const textVariants = { hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } };
+    const buttonClass = "flex items-center h-12 w-full px-4 gap-2";
+
+    return (
+        <Container className="flex">
+            <div className="hidden md:block">
+                <Sidenav
+                    expanded={expand}
+                    appearance="default"
+                    className={`flex flex-col min-h-screen fixed top-0 left-0 transition-all duration-300 ease-in-out border-r border-gray-200 overflow-hidden ${expand ? 'w-72' : 'w-18'}`}
+                >
+                    <Sidenav.Body className="flex-grow">
+                        <Nav vertical>
+                            {navItems.filter(item => item.show).map(item => (
+                                <Nav.Item
+                                    key={item.page}
+                                    className={buttonClass}
+                                    onClick={() => handleNavItemClick(item.page)}
+                                    aria-label={item.ariaLabel}
+                                    active={page === item.page}
+                                >
+                                    {item.icon}
+                                    {expand && (
+                                        <motion.span variants={textVariants} initial="hidden" animate="visible"
+                                                     transition={{delay: 0.2}}>
+                                            {item.label}
+                                        </motion.span>
+                                    )}
+                                </Nav.Item>
+                            ))}
+                        </Nav>
+                    </Sidenav.Body>
+                    <div className="px-2 my-2"><Divider/></div>
+                    <div className="flex flex-col items-start">
+                        <Nav vertical>
+                            <Nav.Item className={`${buttonClass} h-12`} onClick={handleLogout} aria-label="登出">
+                                <ExitIcon/>
+                                {expand && (
+                                    <motion.span variants={textVariants} initial="hidden" animate="visible"
+                                                 transition={{delay: 0.2}}>
+                                        登出
+                                    </motion.span>
+                                )}
+                            </Nav.Item>
+                            <Nav.Item className={`${buttonClass} h-12`} onClick={() => setExpand(!expand)} aria-label="切换侧边栏">
+                                <MenuIcon/>
+                                {expand && (
+                                    <motion.span variants={textVariants} initial="hidden" animate="visible"
+                                                 transition={{delay: 0.2}}>
+                                        切换侧边栏
+                                    </motion.span>
+                                )}
+                            </Nav.Item>
+                        </Nav>
+                    </div>
+                </Sidenav>
+            </div>
+            <div className="block md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+                <Nav justified>
+                    {navItems.filter(item => item.show).map(item => (
+                        <Nav.Item
+                            key={item.page}
+                            className="flex flex-col items-center justify-center py-2"
+                            onClick={() => handleNavItemClick(item.page)}
+                            aria-label={item.ariaLabel}
+                            active={page === item.page}
+                        >
+                            {item.icon}
+                            <Text className="text-xs mt-1">{item.label}</Text>
+                        </Nav.Item>
+                    ))}
+                    <Nav.Item className="flex flex-col items-center justify-center py-2" onClick={handleLogout}
+                              aria-label="登出">
+                        <ExitIcon/>
+                        <Text className="text-xs mt-1">登出</Text>
+                    </Nav.Item>
+                </Nav>
+            </div>
+            <motion.div
+                animate={{marginLeft: expand ? 288 : (isMobile ? (isPortrait ? 0 : 72) : 72), paddingTop: "30px", opacity: page === 1 ? 1 : 0}}
+                transition={{duration: 0.3}}
+                className="flex-grow p-5 transition-all duration-300"
+                style={{ marginLeft: expand ? '288px' : '0', paddingTop: '30px', paddingBottom: '120px' }}
+            >
+                <Container className="flex flex-col items-center md:items-start">
+                    <UserCard
+                        userId={userid}
+                        nickname={nickname}
+                        auth={auth}
+                        discount={discount}
+                        balance={balance}
+                        consumption={consumption}
+                        playcount={playcount}
+                        playTime={playTime}
+                        estimatedCharge={estimatedCharge > 0 ? estimatedCharge : undefined}
+                    />
+
+                    <ContactCard
+                        userId={userid}
+                    />
+                </Container>
+            </motion.div>
+        </Container>
+    );
+}

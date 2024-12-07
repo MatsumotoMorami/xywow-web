@@ -1,21 +1,55 @@
-import {useDispatch, useSelector} from "react-redux";
-import {Button, ButtonGroup, ButtonToolbar, Container, Divider, Modal, Sidebar, Text} from "rsuite";
-import {AppDispatch, RootState} from "./redux/store";
-import React, {createContext, useContext, useRef} from "react";
-import {Login} from "./Login";
-import 'rsuite/Modal/styles/index.css'
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { Container, Divider, Modal, Text } from "rsuite";
+import { AppDispatch, RootState } from "./redux/store";
+import { Login } from "./Login";
+import 'rsuite/Modal/styles/index.css';
+import '../app/styles/globals.css';
+import { LoginOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Button as AntButton, Spin } from 'antd';
 
-const MyContext = createContext(null);
-
-export default function HomePageSet({registerRef}) {
+// HomePageSet 组件
+export default function HomePageSet({ registerRef }) {
     const expand = useSelector((state: RootState) => state.expand.value);
     const dispatch = useDispatch<AppDispatch>();
+
+    // 加载状态，默认是 true，页面加载时显示 Spin 组件
+    const [loading, setLoading] = useState(true);
+
+    // 页面加载完成后切换状态
+    useEffect(() => {
+        // 在页面加载完成后切换 loading 状态
+        const handleLoad = () => setLoading(false);
+
+        // 添加事件监听器，当页面加载完成时触发
+        window.addEventListener('load', handleLoad);
+
+        // 清理事件监听器
+        return () => {
+            window.removeEventListener('load', handleLoad);
+        };
+    }, []);
+
     const registerClickHandle = () => {
-        registerRef.current.scrollIntoView({behavior: 'smooth'});
-    }
+        if (registerRef.current) {
+            registerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    // 在页面加载前显示 Spin 组件，加载完成后显示页面内容
+    if (loading) {
+        return (
+            <Container className="w-full h-full flex items-center justify-center">
+                <Spin size="large" />
+            </Container>
+        );
+    }
+
+    // 页面加载完成后显示内容
     return (
         <Container className="w-[80vw] h-[100vh] ml-[10vw] flex flex-col items-center justify-center">
             <Container
@@ -23,33 +57,64 @@ export default function HomePageSet({registerRef}) {
                 <Text className="text-6xl text-center mb-[3vh]">XYwowNET</Text>
                 <Text className="text-center">Powered by KohakuwuTech</Text>
             </Container>
-            <Container
-                className="mt-[5vh] w-80 font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent] flex justify-evenly">
-                <Button className="h-[5vh] flex items-center justify-center group flex-col" onClick={handleOpen}>
-                    <span>登录</span>
-                    <span
-                        className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </Button>
-                <Button className="h-[5vh] flex items-center justify-center group flex-col"
-                        onClick={registerClickHandle}>
-                    <span>注册</span>
-                    <span
-                        className="h-[4px] mt-1 rounded-full w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </Button>
+
+            <Container className="mt-[5vh] w-80 font-black flex justify-evenly">
+                <div style={{
+                    marginTop: '5vh',
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                    fontWeight: 'bold',
+                    gap: '20px'
+                }}>
+                    <AntButton
+                        className="ant-btn-gradient"
+                        icon={<LoginOutlined />}
+                        onClick={handleOpen}
+                    >
+                        登录
+                    </AntButton>
+                    <AntButton
+                        className="ant-btn-gradient"
+                        icon={<UserAddOutlined />}
+                        onClick={registerClickHandle}
+                    >
+                        注册
+                    </AntButton>
+                </div>
             </Container>
+
             <Modal open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Text className="font-black text-2xl">登录</Text>
                 </Modal.Header>
                 <Modal.Body>
-                    <Login></Login>
+                    <Login />
                 </Modal.Body>
             </Modal>
         </Container>
-    )
+    );
 }
 
-export function AboutPageSet({registerRef}) {
+// AboutPageSet 组件
+export function AboutPageSet({ registerRef }) {
+    const [loading, setLoading] = useState(true);
+
+    // 模拟数据加载完成
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false); // 数据加载完成，停止加载状态
+        }, 2000); // 模拟加载延迟 2 秒
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (loading) {
+        return (
+            <Container className="w-full h-full flex items-center justify-center">
+                <Spin size="large" />
+            </Container>
+        );
+    }
+
     let staffList = [
         {
             name: "xy0v0",
@@ -78,7 +143,7 @@ export function AboutPageSet({registerRef}) {
         },
         {
             name: "Kcalb",
-            job: "后端工程师 Bot开发",
+            job: "全栈GPT工程师",
             userId: 1456917166
         },
         {
@@ -86,7 +151,8 @@ export function AboutPageSet({registerRef}) {
             job: "网页设计",
             userId: 750174883
         }
-    ]
+    ];
+
     return (
         <Container className="w-[80vw] ml-[10vw] pb-[8vh] pt-[5vh]" ref={registerRef}>
             <Container className="w-full ml-[2vw]">
@@ -104,17 +170,16 @@ export function AboutPageSet({registerRef}) {
             <Container className="w-full mt-[5vh]">
                 <Text className="font-black text-5xl mb-[2vh] ml-[2vw] text-white">👾 职能STAFF一览</Text>
                 <Container className="overflow-x-auto flex bg-opacity-50 mb-[5vh] flex-wrap w-[80vw]">
-                    {/* https://q2.qlogo.cn/headimg_dl?dst_uin=3098805300&spec=640 QQ头像*/}
                     {staffList.map(item => {
-                        let ret = (
+                        return (
                             <Container
                                 className="m-[2vw] px-6 py-2 w-[218px] rounded-3xl bg-white hover:shadow-2xl shadow-md duration-300 flex flex-col"
                                 key={item.userId}>
                                 <img width="170" height="170"
                                      src={"https://q2.qlogo.cn/headimg_dl?dst_uin=" + item.userId.toString() + "&spec=640"}
-                                     className="rounded-3xl mt-3"></img>
+                                     className="rounded-3xl mt-3" />
                                 <Container className="flex flex-row leading-tight">
-                                    <Container className="w-2 h-[60%] mt-[10%] mr-3 rounded-full bg-color"/>
+                                    <Container className="w-2 h-[60%] mt-[10%] mr-3 rounded-full bg-color" />
                                     <Container
                                         className="flex flex-col overflow-x-auto text-nowrap overflow-hidden scrollbar-hide">
                                         <Text className="text-left mt-3 font-black">{item.name}</Text>
@@ -122,12 +187,11 @@ export function AboutPageSet({registerRef}) {
                                     </Container>
                                 </Container>
                             </Container>
-                        )
-                        return ret;
+                        );
                     })}
                 </Container>
             </Container>
-            <Divider></Divider>
+            <Divider />
         </Container>
-    )
+    );
 }

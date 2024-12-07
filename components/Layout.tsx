@@ -1,233 +1,97 @@
-import {Container, Nav, Panel, Sidenav} from "rsuite";
-import 'rsuite/sidenav/styles/index.css'
-import 'rsuite/nav/styles/index.css'
-import 'rsuite/dropdown/styles/index.css'
-import 'rsuite/Panel/styles/index.css'
-import DashboardIcon from '@rsuite/icons/legacy/Dashboard';
-import CalendarIcon from '@rsuite/icons/legacy/Calendar';
-import ExitIcon from '@rsuite/icons/Exit';
-import {useEffect, useState} from "react";
-import {Paypal, Server, SignOut} from "@rsuite/icons/cjs/react/legacy";
-import MenuIcon from '@rsuite/icons/Menu';
-import {Text} from 'rsuite';
-import {motion} from "framer-motion";
+// HomePage.tsx
+import React from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Container, Divider, Modal, Text } from "rsuite";
+import { AppDispatch, RootState } from "./redux/store";
+import { Login } from "./Login";
+import 'rsuite/Modal/styles/index.css';
+import '../app/styles/globals.css';
+import { LoginOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Button as AntButton } from 'antd';
+import { createStyles } from 'antd-style';
 
-const SERVER_URL = "https://api.xywow.studio:12060";
+const useStyle = createStyles(({ prefixCls, css }) => ({
+    linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      border-width: 0;
 
-export function DefaultLayout() {
-    const [isLoading, setIsLoading] = useState(true); // 跟踪加载状态
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // 跟踪鉴权状态
-    const [nickname, setNickname] = useState("忆梦");
-    const [expand, setExpand] = useState(false);
-    const [page, setPage] = useState(1);
-    const [auth, setAuth] = useState("STAFF");
-    const [playTime, setPlayTime] = useState("");
-    const [balance, setBalance] = useState(0);
-    const [consumption, setConsumption] = useState(0);
-    const [userid, setUserId] = useState(2803355799);
-    const [image, setImage] = useState("https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640");
-    const onclick1 = () => {
-        setPage(1)
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #6253e1, #04befe);
+        position: absolute;
+        inset: 0;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
     }
-    const onclick2 = () => {
-        setPage(2)
-    }
-    const onclick3 = () => {
-        setPage(3)
-    }
-    const onclick4 = () => {
-        setPage(4)
-    }
-    const onclick5 = () => {
-        setPage(5)
-    }
-    const onclick6 = () => {
-        fetch(`${SERVER_URL}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include' // 确保发送cookie
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user info');
-                }
-                window.location.href = "/";
-                return response.json();
-            })
-            .catch(error => {
-                console.error('Error fetching user info:', error);
-            });
-    }
-    useEffect(() => {
-        // 获取用户信息
-        fetch(`${SERVER_URL}/auth/user`, {
-            method: 'GET',
-            credentials: 'include' // 确保发送cookie
-        })
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 500) {
-                        window.location.href = "/";
-                    }
-                    throw new Error('Failed to fetch user info');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data)
-                setUserId(data.userId);
-                setImage(`https://q2.qlogo.cn/headimg_dl?dst_uin=${data.userId}&spec=640`);
-                setNickname(data.userName);
-                if (data.auth === 0) {
-                    setAuth("STAFF");
-                } else if (data.auth === 1) {
-                    setAuth("普通玩家");
-                } else if (data.auth === 2) {
-                    setAuth("您已被警告");
-                } else if (data.auth === 3) {
-                    setAuth("您已被封禁");
-                }
-                setBalance(data.money)
-                setConsumption(data.consumption)
-                setPlayTime(data.playTime)
-                setIsAuthenticated(true);
-            }).finally(() => {
-            setIsLoading(false); // 完成加载
-        })
-            .catch(error => {
-                console.error('Error fetching user info:', error);
-            });
-    }, []);
-    // if (isLoading) {
-    //     // 在鉴权完成之前，显示加载指示器
-    //     return <div>加载中...</div>;
-    // }
-    // if (!isAuthenticated) {
-    //     window.location.href = "/";
-    // } else
+  `,
+}));
+
+export default function HomePageSet({ registerRef }) {
+    const expand = useSelector((state: RootState) => state.expand.value);
+    const dispatch = useDispatch<AppDispatch>();
+
+    const registerClickHandle = () => {
+        if (registerRef.current) {
+            registerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const { styles } = useStyle();  // 获取渐变按钮样式
+
     return (
-        <Container>
-            <Sidenav className="max-w-[300px] min-h-[100vh] fixed" expanded={expand}>
-                <Sidenav.Body>
-                    <Nav className={"text-center"}>
-                        <Nav.Item icon={<DashboardIcon/>} onClick={onclick1}>首页</Nav.Item>
-                        <Nav.Item icon={<CalendarIcon/>} onClick={onclick2}>预约</Nav.Item>
-                        <Nav.Item icon={<Paypal/>} onClick={onclick3}>充值</Nav.Item>
-                        <Nav.Item icon={<MenuIcon/>} onClick={onclick4}>排行榜</Nav.Item>
-                        <Nav.Item icon={<Server/>} onClick={onclick5}>管理面板</Nav.Item>
-                    </Nav>
-                </Sidenav.Body>
-                <Sidenav.Toggle onToggle={setExpand}/>
-            </Sidenav>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 1 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption}</Text>
-                        <Text>余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 2 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 3 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 4 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 5 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-            <motion.div
-                animate={{marginLeft: expand ? "330px" : "86px", paddingTop: "30px", opacity: page === 6 ? 1 : 0}}
-                transition={{duration: 0.1}}
-            >
-                <Container className={"flex fixed"}>
-                    <img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2803355799&spec=640"
-                         className="w-[30vh] h-[30vh] rounded-xl"
-                         alt="头像"
-                    ></img>
-                    <Panel header={<Text className={"text-3xl"}>个人信息</Text>} shaded
-                           className={"bg-white w-[40vw] h-[30vh] ml-5 font-black leading-loose"}>
-                        <Text>昵称：{nickname}</Text>
-                        <Text>游玩时间：{playTime}</Text>
-                        <Text className={"whitespace-pre-wrap"}>预计消费：￥{consumption} 余额：￥{balance}</Text>
-                        <Text>权限组：{auth}</Text>
-                    </Panel>
-                </Container>
-            </motion.div>
-        </Container>
-    )
+        <Container className="w-[80vw] h-[100vh] ml-[10vw] flex flex-col items-center justify-center">
+            <Container
+                className="font-black bg-gradient-to-r from-[#43dfb2] via-[#00e2ff] to-[#d8b5ff] bg-clip-text [-webkit-text-fill-color:transparent]">
+                <Text className="text-6xl text-center mb-[3vh]">XYwowNET</Text>
+                <Text className="text-center">Powered by KohakuwuTech</Text>
+            </Container>
 
+            <Container className="mt-[5vh] w-80 font-black flex justify-evenly">
+                <div style={{
+                    marginTop: '5vh',
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                    fontWeight: 'bold',
+                    gap: '20px'
+                }}>
+                    <AntButton
+                        className={styles.linearGradientButton}  // 使用渐变按钮样式
+                        icon={<LoginOutlined />}
+                        onClick={handleOpen}
+                    >
+                        登录
+                    </AntButton>
+                    <AntButton
+                        className={styles.linearGradientButton}  // 使用渐变按钮样式
+                        icon={<UserAddOutlined />}
+                        onClick={registerClickHandle}
+                    >
+                        注册
+                    </AntButton>
+                </div>
+            </Container>
+
+            <Modal open={open} onClose={handleClose}>
+                <Modal.Header>
+                    <Text className="font-black text-2xl">登录</Text>
+                </Modal.Header>
+                <Modal.Body>
+                    <Login />
+                </Modal.Body>
+            </Modal>
+        </Container>
+    );
 }

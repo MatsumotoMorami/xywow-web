@@ -2,12 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 自定义字体 */
 @font-face {
     font-family: "AaYuanWeiTuSi-2";
     font-weight: normal;
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'global';
+    src: url('/fonts/GeistMonoVF.woff');
+}
+
+@font-face {
+    font-family: 'globalJP';
+    src: url('/fonts/GeistVF.woff');
+}
+
+/* 动态渐变背景 */
+.bg-color {
+    background-image: linear-gradient(to right, #00b864, #008ecc, #8466cd, #00b864);
+    background-size: 1000% 100%;
+    animation: gradient-loop 30s ease-in-out infinite alternate;
+}
+
+/* 动画 */
 .headerTextAnimation:hover {
     animation: headerTextMovingAnimation 0.5s ease-out infinite alternate;
 }
@@ -16,293 +35,91 @@
     0% {
         transform: translateY(0%);
     }
-
     100% {
         transform: translateY(-8%);
     }
-}
-
-.card-bg {
-    background-color: rgba(102, 255, 230, 0.822)
-}
-
-.bg-color {
-    background-image: linear-gradient(to right, #00b864, #008ecc, #8466cd, #00b864);
-    /* 蓝色-紫色-蓝色 */
-    background-size: 1000% 100%;
-    /* 关键：设置足够大的渐变尺寸 */
-    animation: gradient-loop 30s ease-in-out infinite alternate;
-    /* 动画控制位置变化 */
 }
 
 @keyframes gradient-loop {
     from {
         background-position: 0% 0%;
     }
-
     to {
         background-position: -500% 0%;
-        /* 关键：移动渐变位置 */
     }
 }
 
-.Header-extra:hover {
-    box-shadow: 3px 3px 3px rgb(14, 81, 94), -3px -3px 3px rgb(127, 232, 253);
+/* 统一图标尺寸 */
+.rs-nav-item .rs-icon,
+.rs-sidenav-toggle .rs-icon {
+    width: 24px;
+    height: 24px;
 }
 
-.sb-extra:focus {
-    box-shadow: 3px 3px 3px rgb(14, 81, 94), -3px -3px 3px rgb(107, 230, 255);
-}
-
-.card-extra:hover {
-    box-shadow: 3px 3px 3px rgb(17, 103, 120), -3px -3px 3px rgb(101, 181, 197);
-}
-
-.container {
-    /* 投影效果 */
-    -webkit-box-reflect: below 1px linear-gradient(transparent, rgba(0, 0, 0, 0.2));
-}
-
-.title {
-    color: rgb(98, 206, 227);
-    /* 字间距 */
-    letter-spacing: 30px;
-    /* 转大写 */
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 85px;
-    outline: none;
-    /* 自定义属性--c，可通过var函数对其调用 */
-    --c: lightseagreen;
-    /* 调用自定义属性--c，设置文字阴影（发光效果） */
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-    /* 执行动画：动画名 时长 线性的 无限次播放 */
-    animation: animate 5s linear infinite;
-}
-
-.titletext {
-    color: rgb(98, 206, 227);
-    /* 字间距 */
-    letter-spacing: 5px;
-    /* 转大写 */
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 76px;
-    outline: none;
-    /* 自定义属性--c，可通过var函数对其调用 */
-    --c: lightseagreen;
-    /* 调用自定义属性--c，设置文字阴影（发光效果） */
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-    /* 执行动画：动画名 时长 线性的 无限次播放 */
-    animation: animate 5s linear infinite;
-}
-
-.titletextforblog {
-    color: rgb(98, 206, 227);
-    /* 字间距 */
-    letter-spacing: 5px;
-    /* 转大写 */
-    line-height: 30px;
-    text-align: center;
-    outline: none;
-    /* 自定义属性--c，可通过var函数对其调用 */
-    --c: lightseagreen;
-    /* 调用自定义属性--c，设置文字阴影（发光效果） */
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-    /* 执行动画：动画名 时长 线性的 无限次播放 */
-    animation: animate 5s linear infinite;
-}
-
-.intro {
-    color: rgb(98, 206, 227);
-    /* 字间距 */
-    letter-spacing: 15px;
-    /* 转大写 */
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 15px;
-    outline: none;
-    /* 自定义属性--c，可通过var函数对其调用 */
-    --c: lightseagreen;
-    /* 调用自定义属性--c，设置文字阴影（发光效果） */
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-    /* 执行动画：动画名 时长 线性的 无限次播放 */
-}
-
-.introtext {
-    color: rgb(98, 206, 227);
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 45px;
-    outline: none;
-    --c: lightseagreen;
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-}
-
-.introtextforblog {
-    line-height: 30px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.introtextforsearchbar {
-    color: rgb(53, 120, 133);
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    line-height: 45px;
-    outline: none;
-    --c: lightseagreen;
-    text-shadow: 0 0 10px var(--c),
-    0 0 20px var(--c),
-    0 0 40px var(--c),
-    0 0 80px var(--c),
-    0 0 160px var(--c);
-}
-
-/* 定义动画 */
-@keyframes animate {
-    to {
-        /* 色相旋转滤镜（设置度数可改变颜色） */
-        filter: hue-rotate(360deg);
-    }
-}
-
-.headerE {
+/* Ant Design 按钮渐变样式 */
+.ant-btn-gradient {
+    background: linear-gradient(135deg, #6253e1, #04befe);
+    border: none;
+    color: white;
     position: relative;
-    overflow: hidden;
-    /* 隐藏溢出的内容 */
+    transition: all 0.3s ease;
 }
 
-.headerE > * {
-    /* 选择 header 的直接子元素 */
+.ant-btn-gradient span {
     position: relative;
-    /* 保证子元素定位的参考点 */
-    top: -200%;
-    /* 初始状态向上隐藏 */
-    transition: top 0.3s ease;
-    /* 添加过渡效果 */
 }
 
-.headerE:hover > * {
-    top: 0;
-    /* 鼠标悬停时恢复原位 */
+.ant-btn-gradient::before {
+    content: '';
+    background: linear-gradient(135deg, #6253e1, #04befe);
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    transition: all 0.3s;
+    border-radius: inherit;
 }
 
-.ipcs {
-    display: grid;
-    grid-template-areas: "a b";
+.ant-btn-gradient:hover::before {
+    opacity: 0;
 }
 
-.introduction-title {
-    line-height: 110px;
+/* 按钮样式 */
+.ant-btn, .Nav-Item {
+    @apply px-4 py-2 rounded-md transition duration-300 ease-in-out;
+    background-color: var(--primary-color);
+    color: white;
 }
 
-.blogCard {
-    display: grid;
-    grid-template-areas: "a a a b";
+.ant-btn:hover, .Nav-Item:hover {
+    background-color: var(--secondary-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.searchbar {
-    background: rgb(195, 208, 255);
-    box-shadow: -3px -3px 3px rgb(221, 228, 255), 3px 3px 3px rgb(163, 183, 255);
+/* 侧边栏菜单项样式 */
+.custom-sidebar-item, .custom-bottom-item {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60px !important;
+    width: 60px !important;
+    padding: 0 !important;
 }
 
-.cardbackground {
-    background: rgb(198, 210, 255);
+.custom-sidebar-item .anticon, .custom-bottom-item .anticon {
+    font-size: 20px !important;
 }
 
-.blogcard {
-    background: rgba(198, 210, 255, 0.4);
+.custom-sidebar-item span, .custom-bottom-item span {
+    font-size: 10px !important;
 }
 
-.blogcard3 {
-    animation: hoverchange 0.3s both alternate ease;
-}
-
-@keyframes hoverchange {
-    100% {
-        box-shadow: 3px 3px 3px rgb(25, 105, 121), -3px -3px 3px rgb(53, 160, 181);
-    }
-}
-
-.blc {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 2fr 2fr 2fr 1fr;
-}
-
-.articlecard {
-    display: grid;
-    grid-template-columns: 4fr 1fr;
-}
-
-.bloglisttitle {
-    line-height: 50px;
-}
-
-.donate {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
-}
-
-.logborder > *:not(:last-child) {
-    border-bottom: solid rgba(0, 64, 93, 0.3) 2px;
-}
-
-.about1 {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-template-rows: 1fr;
-}
-
-.about2 {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 5fr;
-}
-
-.about3 {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 4fr 1fr;
-}
-
-.about4 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-}
-
-.abouttitle {
-    letter-spacing: 10px;
-}
-
-.aboutintro {
+/* 动态文本效果 */
+.aboutintro, .intro, .introtext {
     color: rgb(98, 206, 227);
     letter-spacing: 5px;
     text-transform: uppercase;
+    text-align: center;
     outline: none;
     --c: lightseagreen;
     text-shadow: 0 0 10px var(--c),
@@ -312,47 +129,33 @@
     0 0 160px var(--c);
 }
 
-.contactme {
-    line-height: 30px;
+/* 统一字体和颜色方案 */
+body, .fontGlobal, .fontGlobalJP {
+    font-family: 'global', 'globalJP', sans-serif;
 }
 
-.contactcard {
-    letter-spacing: 3px;
+:root {
+    --primary-color: #00b864;
+    --secondary-color: #008ecc;
+    --accent-color: #8466cd;
+    --text-color: #000000;
+    --background-color: #ffffff;
 }
 
-.aboutpepe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-}
-
-@font-face {
-    font-family: 'global';
-    src: url('/fonts/ZCOOLKuaiLe-Regular.ttf');
-}
-
-@font-face {
-    font-family: 'globalJP';
-    src: url('/fonts/ZenKurenaido-Regular.ttf');
-}
-
-.fontGlobal {
-    font-family: 'global', 'globalJP';
-}
-
+/* 滚动条隐藏 */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
 
 .scrollbar-hide {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
 }
 
-button:focus-visible {
-    outline: none;
-    box-shadow: none;
+/* 内容区域背景样式 */
+.bg-white {
+    background-color: var(--background-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
 }
