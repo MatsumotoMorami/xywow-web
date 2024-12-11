@@ -1,11 +1,15 @@
-import {configureStore} from "@reduxjs/toolkit";
-import {expandReducer} from "./expand";
+// redux/store.ts
+import { configureStore } from '@reduxjs/toolkit';
+import loadingReducer from './loadingSlice';
 
-export const store = configureStore({
+const store = configureStore({
     reducer: {
-        expand: expandReducer
-    }
-})
+        loading: loadingReducer,
+        // 其他 reducers
+    },
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export { store };
+export default store;

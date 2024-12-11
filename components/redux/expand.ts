@@ -1,14 +1,26 @@
-import {createSlice} from "@reduxjs/toolkit";
+// redux/expandSlice.ts
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface ExpandState {
+    value: boolean; // 根据需求定义状态类型
+}
+
+const initialState: ExpandState = {
+    value: false,
+};
 
 const expandSlice = createSlice({
     name: 'expand',
-    initialState: {value: false},
+    initialState,
     reducers: {
-        rev: (state) => {
+        setExpand(state, action: PayloadAction<boolean>) {
+            state.value = action.payload;
+        },
+        toggleExpand(state) {
             state.value = !state.value;
-        }
-    }
-})
+        },
+    },
+});
 
-export const {rev} = expandSlice.actions;
-export const expandReducer = expandSlice.reducer;
+export const { setExpand, toggleExpand } = expandSlice.actions;
+export default expandSlice.reducer;

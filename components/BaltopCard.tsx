@@ -82,7 +82,7 @@ export const BaltopCard: React.FC = () => {
         <Card
             title={<div className="text-xl font-bold">消费排行榜</div>}
             bordered={false}
-            className="max-w-md mb-5 w-full"
+            className="w-[40vw] min-w-[320px] mb-5"
             extra={
                 <Button icon={<ReloadOutlined />} onClick={fetchBaltop} />
             }

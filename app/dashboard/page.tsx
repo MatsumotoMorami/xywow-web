@@ -1,5 +1,5 @@
 "use client";
-import HomePageSet, {AboutPageSet} from "@/components/HomePage";
+import HomePageSet, {AboutPageSet} from "@/components/HomePageSet";
 import {DefaultLayout} from "@/components/Layout";
 import {store} from "@/components/redux/store";
 import React, {useRef} from "react";

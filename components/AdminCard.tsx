@@ -17,17 +17,16 @@ export const AdminCard: React.FC = () => {
             cancelText: "取消",
             onOk: async () => {
                 try {
-                    const response = await fetch(`${url}/server/control`, {
-                        method: "POST",
+                    const response = await fetch(`https://mai.xywow.studio${command}`, {
+                        method: "GET",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
-                        body: JSON.stringify({ command }),
-                    });
-                    const data = await response.json();
+                    })
+
                     if (response.ok) {
-                        message.success(data.message || `命令 "${command}" 执行成功.`);
+                        message.success(await response.text() || `命令 "${command}" 执行成功.`);
                     } else {
-                        message.error(data.error || `执行命令 "${command}" 失败.`);
+                        message.error(response.statusText || `执行命令 "${command}" 失败.`);
                     }
                 } catch (error: any) {
                     console.error("Error executing server control:", error);
@@ -92,14 +91,49 @@ export const AdminCard: React.FC = () => {
             <div className="flex flex-wrap gap-2 mb-4">
                 <Button
                     icon={<ReloadOutlined />}
-                    onClick={() => handleServerControl("restart")}
+                    onClick={() => handleServerControl("/")}
                     type="primary"
                 >
-                    重启服务器
+                    测试连通性
+                </Button>
+                <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => handleServerControl("/shut")}
+                    type="primary"
+                >
+                    关闭HDD
+                </Button>
+                <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => handleServerControl("/cn")}
+                    type="primary"
+                >
+                    切换国服
+                </Button>
+                <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => handleServerControl("/jp")}
+                    type="primary"
+                >
+                    切换日服
+                </Button>
+                <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => handleServerControl("/en")}
+                    type="primary"
+                >
+                    切换国际服
+                </Button>
+                <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => handleServerControl("/ongeki")}
+                    type="primary"
+                >
+                    切换音击
                 </Button>
                 <Button
                     icon={<PoweroffOutlined />}
-                    onClick={() => handleServerControl("shut")}
+                    onClick={() => handleServerControl("/shutdown")}
                     type="primary"
                     danger
                 >
@@ -107,31 +141,11 @@ export const AdminCard: React.FC = () => {
                 </Button>
                 <Button
                     icon={<ReloadOutlined />}
-                    onClick={() => handleServerControl("switch-cn")}
+                    onClick={() => handleServerControl("/restart")}
                     type="primary"
+                    danger
                 >
-                    切换国服
-                </Button>
-                <Button
-                    icon={<ReloadOutlined />}
-                    onClick={() => handleServerControl("switch-jp")}
-                    type="primary"
-                >
-                    切换日服
-                </Button>
-                <Button
-                    icon={<ReloadOutlined />}
-                    onClick={() => handleServerControl("switch-en")}
-                    type="primary"
-                >
-                    切换国际服
-                </Button>
-                <Button
-                    icon={<ReloadOutlined />}
-                    onClick={() => handleServerControl("switch-ongeki")}
-                    type="primary"
-                >
-                    切换音击服
+                    重启
                 </Button>
             </div>
 
