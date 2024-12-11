@@ -116,7 +116,7 @@ export const UserCard: React.FC<UserCardProps> = ({
         <Card
             title={<div className="text-center">{nickname}</div>}  // 这里修改了标题的渲染方式
             bordered={false}
-            className="mb-5 justify-center w-[40vw] min-w-[320px] mx-auto" // mx-auto 用于水平居中
+            className="mb-5 justify-center min-w-[200px] max-w-4xl w-full mx-auto" // mx-auto 用于水平居中
         >
             <div className="flex justify-center p-2">
                 <img

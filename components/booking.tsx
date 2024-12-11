@@ -1,6 +1,4 @@
-﻿// AppointmentModule.tsx
-
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
     Table,
@@ -33,22 +31,23 @@ interface Schedule {
 
 interface Appointment {
     id: number;
-    games: string[]; // 修改为字符串数组
-    startDateTime: string; // ISO string
-    endDateTime: string;   // ISO string
+    games: string[];
+    startDateTime: string;
+    endDateTime: string;
     createdAt: string;
 }
 
 interface MergedAppointment {
-    ids: number[]; // 合并后的预约ID
-    games: string[]; // 合并后的游戏名称
+    ids: number[];
+    games: string[];
     date: string;
-    startTime: string; // 完整的HH:mm
-    endTime: string;   // 完整的HH:mm
+    startTime: string;
+    endTime: string;
+    endDate: string; // 添加结束日期字段
     createdAt: string;
 }
 
-const url = "https://api.xywow.studio"; // 根据实际情况调整
+const url = "https://api.xywow.studio";
 
 const AppointmentModule: React.FC = () => {
     // 状态管理
@@ -92,8 +91,11 @@ const AppointmentModule: React.FC = () => {
                 params: { gameId },
                 withCredentials: true,
             });
+
             if (response.data.length > 0) {
                 const rawSchedule = response.data[0].schedule;
+                // 打印原始数据以便调试
+                console.log('Raw schedule:', rawSchedule);
                 setSchedule(rawSchedule);
             } else {
                 setSchedule({});
@@ -114,7 +116,7 @@ const AppointmentModule: React.FC = () => {
                 withCredentials: true,
             });
             setAppointments(response.data);
-            console.log('Fetched Appointments:', response.data); // 添加日志
+            console.log('Fetched Appointments:', response.data);
         } catch (error: any) {
             message.error('获取预约记录失败');
             console.error(error);
@@ -177,47 +179,39 @@ const AppointmentModule: React.FC = () => {
         return end.isAfter(start, 'day');
     };
 
-    // 禁用日期选择函数，限制为今天及未来六天
+    // 禁用日期选择函数
     const disabledDate = (current: Moment) => {
-        const now = moment().utcOffset(480); // GMT+8
+        const now = moment().utcOffset(480);
         const startOfToday = now.clone().startOf('day');
         const endOf7Days = now.clone().add(6, 'days').endOf('day');
         return current < startOfToday || current > endOf7Days;
     };
 
-    // 禁用时间选择函数，限制当前日的过去时间段
+    // 禁用时间选择函数
     const disabledTimeFunc = (current: Moment | null) => {
         if (!current) return {};
 
-        const now = moment().utcOffset(480); // GMT+8
-        // 如果选定日期是今天，则限制今天已过的时间段
+        const now = moment().utcOffset(480);
         if (current.isSame(now, 'day')) {
             const currentHour = now.hour();
             const currentMinute = now.minute();
 
             return {
                 disabledHours: () => {
-                    // 禁用当前时间之前的所有小时
                     return Array.from({ length: 24 }, (_, i) => i).filter(hour => hour < currentHour);
                 },
                 disabledMinutes: (selectedHour: number) => {
-                    // 如果选中的小时就是当前小时，则根据当前分钟禁用分钟段
                     if (selectedHour === currentHour) {
                         if (currentMinute < 30) {
-                            // 当前分钟小于30，则 00分段已过
                             return [0];
                         } else {
-                            // 当前分钟大于等于30，00和30分段均已过
                             return [0, 30];
                         }
                     }
-                    // 对于未来小时，不禁用分钟选择
                     return [];
                 }
             };
         }
-
-        // 对于未来日期不进行时间禁用
         return {};
     };
 
@@ -228,9 +222,7 @@ const AppointmentModule: React.FC = () => {
         const startMoment: Moment = startDateTime;
         const endMoment: Moment = endDateTime;
 
-        // 检查是否跨日
         if (doesCrossMidnight(startMoment, endMoment)) {
-            // 跨日预约，直接提交单个请求，让API处理拆分
             try {
                 await axios.post(
                     `${url}/appointments`,
@@ -256,7 +248,6 @@ const AppointmentModule: React.FC = () => {
                 console.error(error);
             }
         } else {
-            // 非跨日预约，直接提交
             try {
                 await axios.post(
                     `${url}/appointments`,
@@ -284,17 +275,7 @@ const AppointmentModule: React.FC = () => {
         }
     };
 
-    // 定义时间段数据（用于显示预约时间表）
-    const timeSlots = [
-        { key: '凌晨', label: '凌晨' },
-        { key: '08:00-10:00', label: '08-10' },
-        { key: '10:00-12:00', label: '10-12' },
-        { key: '12:00-14:00', label: '12-14' },
-        { key: '14:00-16:00', label: '14-16' },
-        { key: '16:00-18:00', label: '16-18' },
-        { key: '18:00-20:00', label: '18-20' },
-        { key: '20:00-22:00', label: '20-22' },
-    ];
+
 
     // 构建预约时间表的表格列
     const scheduleColumns = [
@@ -341,26 +322,63 @@ const AppointmentModule: React.FC = () => {
     ];
 
     // 构建预约时间表的表格数据
-    const scheduleData = timeSlots.map((slot) => {
-        if (slot.key === '凌晨') {
-            return {
-                key: slot.key,
-                timeRange: slot.label,
-                ...Object.fromEntries(
-                    Object.entries(schedule).map(([date, slots]) => [date, slots['凌晨'] || 0])
-                ),
-            };
-        } else {
-            return {
-                key: slot.key,
-                timeRange: slot.label,
-                ...Object.fromEntries(
-                    Object.entries(schedule).map(([date, slots]) => [date, slots[slot.key] || 0])
-                ),
-            };
-        }
-    });
+    // 构建预约时间表的表格数据
+    // 构建预约时间表的表格数据
+    // 定义时间段数据
+    const timeSlots = [
+        { key: '凌晨', label: '凌晨' },
+        { key: '08:00-10:00', label: '08-10' },
+        { key: '10:00-12:00', label: '10-12' },
+        { key: '12:00-14:00', label: '12-14' },
+        { key: '14:00-16:00', label: '14-16' },
+        { key: '16:00-18:00', label: '16-18' },
+        { key: '18:00-20:00', label: '18-20' },
+        { key: '20:00-22:00', label: '20-22' },
+        { key: '22:00-24:00', label: '22-24' }  // 添加 22:00-24:00 时间段
+    ];
 
+// 构建预约时间表的表格数据
+    const scheduleData = timeSlots.map((slot) => {
+        return {
+            key: slot.key,
+            timeRange: slot.label,
+            ...Object.fromEntries(
+                Object.entries(schedule).map(([date, slots]) => {
+                    let count = 0;
+
+                    if (slot.key === '凌晨') {
+                        // 凌晨时段需要合并 0:00-8:00 的所有时间段
+                        const earlySlots = [
+                            '0:00-2:00',
+                            '2:00-4:00',
+                            '4:00-6:00',
+                            '6:00-8:00'
+                        ];
+                        // 取这些时间段中的最大值作为凌晨时段的预约数
+                        count = Math.max(
+                            ...earlySlots.map(timeSlot => slots[timeSlot] || 0)
+                        );
+                    } else {
+                        // 其他时间段需要映射到后端的格式
+                        const timeMap: { [key: string]: string } = {
+                            '08:00-10:00': '8:00-10:00',
+                            '10:00-12:00': '10:00-12:00',
+                            '12:00-14:00': '12:00-14:00',
+                            '14:00-16:00': '14:00-16:00',
+                            '16:00-18:00': '16:00-18:00',
+                            '18:00-20:00': '18:00-20:00',
+                            '20:00-22:00': '20:00-22:00',
+                            '22:00-24:00': '22:00-24:00'  // 添加映射
+                        };
+                        const apiTimeSlot = timeMap[slot.key];
+                        count = slots[apiTimeSlot] || 0;
+                    }
+
+                    return [date, count];
+                })
+            ),
+        };
+    });
     // 合并预约记录
     const mergedAppointments: MergedAppointment[] = [];
 
@@ -374,189 +392,237 @@ const AppointmentModule: React.FC = () => {
 
     // 合并同日期、同时间的预约
     sortedAppointments.forEach((appointment) => {
-        const date = moment(appointment.startDateTime).format('YYYY-MM-DD');
-        const startTime = moment(appointment.startDateTime).format('HH:mm:ss');
-        const endTime = moment(appointment.endDateTime).format('HH:mm:ss');
+        const startMoment = moment(appointment.startDateTime);
+        const endMoment = moment(appointment.endDateTime);
+        const date = startMoment.format('YYYY-MM-DD');
+        const startTime = startMoment.format('HH:mm:ss');
+        const endTime = endMoment.format('HH:mm:ss');
+        const endDate = endMoment.format('YYYY-MM-DD');
 
         const existing = mergedAppointments.find(ma =>
             ma.date === date &&
             ma.startTime === startTime &&
-            ma.endTime === endTime
+            ma.endTime === endTime &&
+            moment(`${ma.date} ${ma.endTime}`).isSame(endMoment)
         );
 
         if (existing) {
-            existing.games.push(...appointment.games); // 修改为展开数组
+            existing.games.push(...appointment.games);
             existing.ids.push(appointment.id);
         } else {
             mergedAppointments.push({
                 ids: [appointment.id],
-                games: [...appointment.games], // 修改为展开数组
+                games: [...appointment.games],
                 date: date,
                 startTime: startTime,
                 endTime: endTime,
+                endDate: endDate, // 添加结束日期
                 createdAt: appointment.createdAt,
             });
         }
     });
 
+
     // 构建预约卡片数据
     const cardData = mergedAppointments.map((ma, index) => ({
         key: index,
-        games: ma.games.join(', '), // 将数组转换为字符串
-        startDateTime: moment(`${ma.date} ${ma.startTime}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY/MM/DD HH:mm:ss'),
-        endDateTime: moment(`${ma.date} ${ma.endTime}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY/MM/DD HH:mm:ss'),
+        games: ma.games.join(', '),
+        startDateTime: moment(`${ma.date} ${ma.startTime}`).format('YYYY/MM/DD HH:mm:ss'),
+        endDateTime: moment(`${ma.endDate} ${ma.endTime}`).format('YYYY/MM/DD HH:mm:ss'),
         ids: ma.ids,
     }));
 
     return (
-        <div style={{ padding: '20px' }}>
-            <Row gutter={[16, 16]}>
-                {/* 创建新预约卡片 */}
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Card title="创建新预约" bordered>
-                        <Button type="primary" onClick={showBookingModal} style={{ marginBottom: 20 }}>
-                            新建预约
-                        </Button>
-                        {/* 创建预约模态框 */}
-                        <Modal
-                            title="创建预约"
-                            visible={isBookingModalVisible}
-                            onOk={handleBookingOk}
-                            onCancel={() => setIsBookingModalVisible(false)}
-                            okText="提交"
-                            cancelText="取消"
-                            width={350}
+
+        <div className="appointment-container max-w-[80vw]" style={{display: 'flex', flexDirection: 'column'}}>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                <Row gutter={[
+                    {xs: 8, sm: 16},
+                    {xs: 8, sm: 16}
+                ]}>
+                    {/* 创建新预约卡片 */}
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Card
+                            title={<div className="text-xl font-bold">创建新预约</div>}
+                            bordered={false}
+                            className="mb-5"
                         >
-                            <Form form={bookingForm} layout="vertical" onFinish={onFinishBooking}>
-                                <Form.Item
-                                    name="gameIds"
-                                    label="游戏"
-                                    rules={[{ required: true, message: '请选择至少一个游戏' }]}
-                                >
-                                    <Select
-                                        mode="multiple"
-                                        placeholder="请选择游戏"
-                                        style={{ width: '100%' }}
+                            <Button type="primary" onClick={showBookingModal} style={{marginBottom: 20}}>
+                                新建预约
+                            </Button>
+                            {/* 创建预约模态框 */}
+                            <Modal
+                                title="创建预约"
+                                visible={isBookingModalVisible}
+                                onOk={handleBookingOk}
+                                onCancel={() => setIsBookingModalVisible(false)}
+                                okText="提交"
+                                cancelText="取消"
+                                width={350}
+                                centered={true}  // 添加此属性
+                                style={{
+                                    maxWidth: 'calc(100vw - 16px)'
+                                }}
+                            >
+                                <Form form={bookingForm} layout="vertical" onFinish={onFinishBooking}>
+                                    <Form.Item
+                                        name="gameIds"
+                                        label="游戏"
+                                        rules={[{required: true, message: '请选择至少一个游戏'}]}
                                     >
-                                        {games.map((game) => (
-                                            <Option key={game.id} value={game.id}>
-                                                {game.name}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="startDateTime"
-                                    label="开始时间"
-                                    rules={[{ required: true, message: '请选择开始时间' }]}
-                                >
-                                    <DatePicker
-                                        showTime={{
-                                            format: 'HH:mm',
-                                            minuteStep: 30,
-                                            // 禁用非00和30的分钟
-                                            disabledMinutes: (selectedHour: number) => {
-                                                const allMinutes = Array.from({ length: 60 }, (_, i) => i);
-                                                return allMinutes.filter(minute => minute !== 0 && minute !== 30);
-                                            }
-                                        }}
-                                        format="YYYY-MM-DD HH:mm"
-                                        style={{ width: '100%' }}
-                                        disabledDate={disabledDate}
-                                        disabledTime={disabledTimeFunc}
-                                    />
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="endDateTime"
-                                    label="结束时间"
-                                    rules={[{ required: true, message: '请选择结束时间' }]}
-                                >
-                                    <DatePicker
-                                        showTime={{
-                                            format: 'HH:mm',
-                                            minuteStep: 30,
-                                            // 禁用非00和30的分钟
-                                            disabledMinutes: (selectedHour: number) => {
-                                                const allMinutes = Array.from({ length: 60 }, (_, i) => i);
-                                                return allMinutes.filter(minute => minute !== 0 && minute !== 30);
-                                            }
-                                        }}
-                                        format="YYYY-MM-DD HH:mm"
-                                        style={{ width: '100%' }}
-                                        disabledDate={disabledDate}
-                                        disabledTime={disabledTimeFunc}
-                                    />
-                                </Form.Item>
-                            </Form>
-                        </Modal>
-                    </Card>
-                </Col>
-
-                {/* 查看预约情况卡片 */}
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Card title="游玩预约情况查看" bordered style={{ marginBottom: '20px' }}>
-                        <div style={{ overflowX: 'auto' }}>
-                            <Table
-                                columns={scheduleColumns}
-                                dataSource={scheduleData}
-                                loading={loadingSchedule}
-                                pagination={false}
-                                bordered
-                                scroll={{ x: 'max-content' }}
-                                size="small"
-                                tableLayout="auto"
-                            />
-                        </div>
-                    </Card>
-                </Col>
-
-                {/* 我的预约卡片 */}
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Card bordered>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            {cardData.map((record) => (
-                                <Card
-                                    key={record.key}
-                                    type="inner"
-                                    size="small"
-                                    style={{ width: '100%' }}
-                                >
-                                    <Space direction="vertical" style={{ width: '100%' }}>
-                                        <p><strong>游戏：</strong>{record.games}</p>
-                                        <p><strong>开始时间：</strong>{record.startDateTime}</p>
-                                        <p><strong>结束时间：</strong>{record.endDateTime}</p>
-                                        <Button
-                                            type="link"
-                                            danger
-                                            onClick={() => {
-                                                showDeleteConfirm(record.ids);
-                                            }}
+                                        <Select
+                                            mode="multiple"
+                                            placeholder="请选择游戏"
+                                            style={{width: '100%'}}
                                         >
-                                            取消预约
-                                        </Button>
-                                    </Space>
-                                </Card>
-                            ))}
-                        </div>
+                                            {games.map((game) => (
+                                                <Option key={game.id} value={game.id}>
+                                                    {game.name}
+                                                </Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
 
-                        {/* 删除预约确认模态框 */}
-                        <Modal
-                            title="确认取消预约"
-                            visible={isDeleteModalVisible}
-                            onOk={handleDelete}
-                            onCancel={handleDeleteCancel}
-                            okText="确认"
-                            cancelText="取消"
+                                    <Form.Item
+                                        name="startDateTime"
+                                        label="开始时间"
+                                        rules={[{required: true, message: '请选择开始时间'}]}
+                                    >
+                                        <DatePicker
+                                            showTime={{
+                                                format: 'HH:mm',
+                                                minuteStep: 30,
+                                                // 禁用非00和30的分钟
+                                                disabledMinutes: (selectedHour: number) => {
+                                                    const allMinutes = Array.from({length: 60}, (_, i) => i);
+                                                    return allMinutes.filter(minute => minute !== 0 && minute !== 30);
+                                                }
+                                            }}
+                                            format="YYYY-MM-DD HH:mm"
+                                            style={{width: '100%'}}
+                                            disabledDate={disabledDate}
+                                            disabledTime={disabledTimeFunc}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="endDateTime"
+                                        label="结束时间"
+                                        rules={[{required: true, message: '请选择结束时间'}]}
+                                    >
+                                        <DatePicker
+                                            showTime={{
+                                                format: 'HH:mm',
+                                                minuteStep: 30,
+                                                // 禁用非00和30的分钟
+                                                disabledMinutes: (selectedHour: number) => {
+                                                    const allMinutes = Array.from({length: 60}, (_, i) => i);
+                                                    return allMinutes.filter(minute => minute !== 0 && minute !== 30);
+                                                }
+                                            }}
+                                            format="YYYY-MM-DD HH:mm"
+                                            style={{width: '100%'}}
+                                            disabledDate={disabledDate}
+                                            disabledTime={disabledTimeFunc}
+                                        />
+                                    </Form.Item>
+                                </Form>
+                            </Modal>
+                        </Card>
+                    </Col>
+
+                    {/* 查看预约情况卡片 */}
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Card
+                            title={<div className="text-xl font-bold">游玩预约情况查看</div>}
+                            bordered={false}
+                            className="mb-5"
                         >
-                            <p>您确定要取消此预约吗？</p>
-                        </Modal>
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    );
-};
+                            <Space direction="horizontal" wrap style={{width: '100%', marginBottom: '16px'}}>
+                                {games.map((game) => (
+                                    <Button
+                                        key={game.id}
+                                        onClick={() => handleGameChange(game.id)}
+                                        style={{
+                                            marginBottom: '8px',
+                                            backgroundColor: selectedGame === game.id ? '#1890ff' : '#ffffff',
+                                            color: selectedGame === game.id ? '#ffffff' : '#000000',
+                                            borderColor: selectedGame === game.id ? '#1890ff' : '#d9d9d9',
+                                        }}
+                                    >
+                                        {game.name}
+                                    </Button>
+                                ))}
+                            </Space>
+                            <div style={{overflowX: 'auto'}}>
+                                <Table
+                                    columns={scheduleColumns}
+                                    dataSource={scheduleData}
+                                    loading={loadingSchedule}
+                                    pagination={false}
+                                    bordered
+                                    scroll={{x: 'max-content'}}
+                                    size="small"
+                                    tableLayout="auto"
+                                />
+                            </div>
+                        </Card>
+                    </Col>
 
-export default AppointmentModule;
+                    {/* 我的预约卡片 */}
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Card
+                            title={<div className="text-xl font-bold">我的预约</div>}
+                            bordered={false}
+                            className="mb-5"
+                        >
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+                                {cardData.map((record) => (
+                                    <Card
+                                        key={record.key}
+                                        type="inner"
+                                        size="small"
+                                        style={{width: '100%'}}
+                                    >
+                                        <Space direction="vertical" style={{width: '100%'}}>
+                                            <p><strong>游戏：</strong>{record.games}</p>
+                                            <p><strong>开始时间：</strong>{record.startDateTime}</p>
+                                            <p><strong>结束时间：</strong>{record.endDateTime}</p>
+                                            <Button
+                                                type="link"
+                                                danger
+                                                onClick={() => {
+                                                    showDeleteConfirm(record.ids);
+                                                }}
+                                            >
+                                                取消预约
+                                            </Button>
+                                        </Space>
+                                    </Card>
+                                ))}
+                            </div>
+
+                            {/* 删除预约确认模态框 */}
+                            <Modal
+                                title="确认取消预约"
+                                visible={isDeleteModalVisible}
+                                onOk={handleDelete}
+                                onCancel={handleDeleteCancel}
+                                okText="确认"
+                                cancelText="取消"
+                                centered={true}  // 添加此属性
+                            >
+                                <p>您确定要取消此预约吗？</p>
+                            </Modal>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        </div>
+            );
+            };
+
+            export default AppointmentModule;

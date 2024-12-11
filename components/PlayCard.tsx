@@ -84,7 +84,7 @@ export const PlayCard: React.FC<PlayCardProps> = ({ inStore, estimatedCharge = 0
         <Card
             title={<div className="text-xl font-bold">{title}</div>}
             bordered={false}
-            className="w-[40vw] min-w-[320px]  mb-5"
+            className="w-full"
         >
             {/* 显示店内 STAFF 和玩家数量 */}
             <div className="mb-4">

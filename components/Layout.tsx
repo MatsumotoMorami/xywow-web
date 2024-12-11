@@ -12,7 +12,8 @@ import {
     DatabaseOutlined,
     UserOutlined,
     MenuOutlined,
-    UnorderedListOutlined
+    UnorderedListOutlined,
+    CloseOutlined
 } from '@ant-design/icons';
 import '@styles/globals.css';
 
@@ -23,7 +24,8 @@ import { BaltopCard } from "./BaltopCard";
 import { AdminCard } from "./AdminCard";
 import { UserManageCard } from "./UserManageCard";
 import UserVerifyCard from "./UserVerifyCard";
-import AppointmentComponent from "@/components/booking"; // 导入新组件
+import Review from "./Review";
+import AppointmentComponent from "./booking"; // 导入新组件
 
 const { Header, Sider, Content } = Layout;
 const { confirm } = Modal;
@@ -146,11 +148,13 @@ export function DefaultLayout() {
         { page: 4, label: "排行榜", icon: <UnorderedListOutlined />, show: true },
         { page: 5, label: "管理面板", icon: <DatabaseOutlined />, show: auth === "STAFF" },
         { page: 6, label: "个人信息", icon: <UserOutlined />, show: true },
+        { page: 7, label: "退出Dashboard", icon:<CloseOutlined />, show: true}
     ];
 
     const handleMenuClick = (info: any) => {
         const targetPage = parseInt(info.key, 10);
-        setPage(targetPage);
+        if(targetPage==7)window.location.href='https://xywow.studio'
+        else setPage(targetPage);
     };
 
     const handleLogout = () => {
@@ -361,8 +365,8 @@ export function DefaultLayout() {
     const renderContent = () => {
         if (page === 6) {
             return (
-                <div className={`flex flex-col ${isMobile ? 'items-center pb-24' : 'items-start'} space-y-4`}>
-                    <div className="w-full max-w-lg">
+                <div className={`flex flex-col items-center space-y-4 w-full`}>
+                    <div className="w-full max-w-4xl">
                         <UserCard
                             userId={userid}
                             nickname={nickname}
@@ -380,8 +384,7 @@ export function DefaultLayout() {
             );
         } else if (page === 1) {
             return (
-                <div className={`flex flex-col ${isMobile ? 'items-center pb-24' : 'items-start'} space-y-4`}>
-                    <div className="w-full max-w-lg">
+                <div className={`flex flex-col ${isMobile ? 'items-center pb-12 max-w-full' : 'items-start'} space-y-4`}>
                         <PlayCard
                             inStore={inStore}
                             estimatedCharge={estimatedCharge > 0 ? estimatedCharge : undefined}
@@ -390,23 +393,21 @@ export function DefaultLayout() {
                             staff={staffCount}
                             players={playersCount}
                         />
-                    </div>
-                    <div className="w-full max-w-lg">
-                        <ContactCard userId={userid} />
-                    </div>
+                        <Review />
+                        <ContactCard />
                 </div>
             );
         } else if (page === 4) {
             return (
-                <div className={`flex flex-col ${isMobile ? 'items-center pb-24' : 'items-start'} space-y-4`}>
+                <div className={`flex flex-col ${isMobile ? 'items-center pb-12' : 'items-start'} space-y-4`}>
                     <div className="w-full max-w-lg">
-                        <BaltopCard />
+                        <BaltopCard/>
                     </div>
                 </div>
             );
         } else if (page === 5 && auth === "STAFF") {
             return (
-                <div className={`flex flex-col ${isMobile ? 'items-center pb-24' : 'items-start'} space-y-4`}>
+                <div className={`flex flex-col ${isMobile ? 'items-center pb-12' : 'items-start'} space-y-4`}>
                     <div className="w-full max-w-4xl">
                         <AdminCard />
                     </div>
@@ -419,10 +420,11 @@ export function DefaultLayout() {
                     </div>
                 </div>
             );
-        } else if(page===2){
-            return <AppointmentComponent></AppointmentComponent>
-        }
-        else {
+        } else if(page===2) {
+            return <div className={`flex flex-col ${isMobile ? 'items-center pb-12' : 'items-start'} space-y-4`}>
+                    <AppointmentComponent />
+            </div>
+        } else {
             // 其他页面简单返回一个空内容或提醒，这里根据需要自行扩展
             return <div>功能开发中...</div>;
         }
@@ -431,7 +433,7 @@ export function DefaultLayout() {
     const siderWidth = expand ? 200 : 80;
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout style={{minHeight: '100vh'}}>
             {!isMobile && (
                 <Sider
                     collapsible

@@ -34,7 +34,7 @@ const contactData = [
 
 export function ContactCard() {
     return (
-        <Card title="联系我们" bordered={false} className="w-[40vw] min-w-[320px]">
+        <Card title="联系我们" bordered={false} className="w-full mb-5">
             <div className="flex justify-around">
                 {contactData.map((contact, index) => (
                     <div key={index} className="flex flex-col items-center">
